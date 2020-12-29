@@ -1,0 +1,29 @@
+{
+  "name": "comfybot",
+  "version": "1.0.0",
+  "description": "Discord bot for ComfyTheatre-related tasks and announcements",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jakecausier/comfybot.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "comfytheatre"
+  ],
+  "author": "Jake Causier",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jakecausier/comfybot/issues"
+  },
+  "homepage": "https://github.com/jakecausier/comfybot#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0"
+  }
+}
