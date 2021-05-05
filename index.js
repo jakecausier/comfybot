@@ -114,9 +114,7 @@ client.on('message', (message) => {
         return message.channel.send(`I can't roll ${value}! Must be between ${min} and ${max}.`)
       }
 
-      const result = 666 // Math.floor(Math.random() * value)
-      message.channel.send(`I am currently rigged...`)
-
+      const result = Math.floor(Math.random() * value)
       if (specialRolls && specialRolls.length > 0) {
         const valueMatch = _.find(specialRolls, { number: result })
         if (typeof valueMatch !== 'undefined') {
