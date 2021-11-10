@@ -1,6 +1,9 @@
 {
-  "prefix": "",
+  "port": 3000,
+  "token": "",
   "discord": {
+    "token": "",
+    "prefix": "",
     "announcement_channel_id": ""
   }
 }
