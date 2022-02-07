@@ -28,21 +28,22 @@ app.use((req, res, next) => {
 // Listen to endpoint to announce on Discord
 app.post("/announce", (req, res) => {
   const channel = client.channels.cache.get(config.discord.announcement_channel_id) || null
-  const type = req.body.type || null
   const title = req.body.title || null
-  const description = req.body.description || null
-  const shouldAnnounce = req.body.announce || null
+  const message = req.body.message || null
+  const shouldAnnounce = req.body.announce || false
   const targetAnnounce = req.body.target || 'here'
-  const url = req.body.stream || null
-  const img = req.body.poster || null
+  const url = req.body.url || null
+  const img = req.body.image || null
 
-  if (channel && type && title) {
-    channel.send(`${type}: ${title} starting now! ${url || ''} ${shouldAnnounce ? `@${targetAnnounce}` : ''}`, {
+  if (channel && message) {
+    channel.send(`${message}${shouldAnnounce ? ` @${targetAnnounce}` : ''}`, {
       embed: new Discord.MessageEmbed({
         url,
         title,
-        description: description,
-        image: img ? { url: img } : null,
+        description: message,
+        image: img ? {
+          url: img
+        } : null,
         provider: defaultProvider,
         color: defaultColor,
         footer: {
