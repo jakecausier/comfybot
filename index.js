@@ -1,4 +1,4 @@
-const { Client, Intents, MessageEmbed } = require('discord.js')
+const { Client, Util, Intents, MessageEmbed } = require('discord.js')
 const express = require('express')
 const parser = require('body-parser')
 const axios = require('axios')
@@ -22,56 +22,78 @@ const defaultProvider = {
   name: 'ComfyTheatre',
   url: 'https://comfytheatre.co.uk/'
 }
-const defaultColor = Discord.Util.resolveColor([241, 51, 51])
+const defaultColor = Util.resolveColor([241, 51, 51])
 
 // Define API key middleware
 app.use((req, res, next) => {
+  let resolved = false
   if (req.path === '/') {
+    resolved = true
     res.redirect('https://comfytheatre.co.uk/');
   }
   if (config.token !== null && config.token !== '' && req.header('X-Auth-Token') === config.token) {
+    resolved = true
     next()
   }
-  res.status(401).json('Missing "X-Auth-Token" header').end()
+  if (!resolved) {
+    res.status(401).json('Missing "X-Auth-Token" header').end()
+  }
 })
 
 // Listen to endpoint to announce on Discord
 app.post("/announce", (req, res) => {
-  const channel = client.channels.cache.get(config.discord.announcement_channel_id) || null
-  const title = req.body.title || null
-  const message = req.body.message || null
-  const shouldAnnounce = req.body.announce || false
-  const targetAnnounce = req.body.target || 'here'
-  const url = req.body.url || null
-  const img = req.body.image || null
 
-  if (channel && message) {
-    channel.send({
-      content: `${message}${shouldAnnounce ? ` @${targetAnnounce}` : ''}`,
-      embeds: [
-        new MessageEmbed({
-          url,
-          title,
-          description: message,
-          image: img ? {
-            url: img
-          } : null,
-          provider: defaultProvider,
-          color: defaultColor,
-          footer: {
-            text: title
-          }
-        })
-      ]
-    })
-    console.log('Sent announcement to Discord!')
+  const channel = config.discord.announcement_channel_id
+
+  if (!channel) {
+    res.status(500).json({ message: 'Missing channel ID' }).end()
+    return
   }
 
-  res.status(200).json({ status: 'OK' }).end()
+  client.channels.fetch(channel)
+    .then((channel) => {
+      const title = req.body.title || null
+      const message = req.body.message || null
+      const shouldAnnounce = req.body.announce || false
+      const targetAnnounce = req.body.target || 'here'
+      const url = req.body.url || null
+      const img = req.body.image || null
+
+      if (!message) {
+        res.status(400).json({ message: 'Missing message content' }).end()
+      }
+
+      channel.send({
+        content: `${message}${shouldAnnounce ? ` @${targetAnnounce}` : ''}`,
+        embeds: [
+          new MessageEmbed({
+            url,
+            title,
+            description: message,
+            image: img ? {
+              url: img
+            } : null,
+            provider: defaultProvider,
+            color: defaultColor,
+            footer: {
+              text: url
+            }
+          })
+        ]
+      })
+      console.log('Sent announcement to Discord!')
+      res.status(200).json({ status: 'OK' }).end()
+      return
+    })
+    .catch((err) => {
+      console.error(err)
+      res.status(500).json({ message: 'Could not fetch channel from ID given' }).end()
+      return
+    })
 })
 
 // Trigger command on message
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
 
   // Ignore other bots
   if (message.author.bot) {
