@@ -21,10 +21,10 @@ app.use((req, res, next) => {
   if (req.path === '/') {
     res.redirect('https://comfytheatre.co.uk/');
   }
-  if (config?.token !== null && req?.headers['X-Auth-Token'] === config.token) {
+  if (config.token !== null && config.token !== '' && req.header('X-Auth-Token') === config.token) {
     next()
   }
-  res.status(401).json('Missing auth_token header').end()
+  res.status(401).json('Missing "X-Auth-Token" header').end()
 })
 
 // Listen to endpoint to announce on Discord
