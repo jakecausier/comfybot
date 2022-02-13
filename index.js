@@ -18,6 +18,9 @@ const defaultColor = Discord.Util.resolveColor([241, 51, 51])
 
 // Define API key middleware
 app.use((req, res, next) => {
+  if (req.path === '/') {
+    res.redirect('https://comfytheatre.co.uk/');
+  }
   if (config?.token !== null && req?.headers['X-Auth-Token'] === config.token) {
     next()
   }
