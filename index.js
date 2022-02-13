@@ -2,7 +2,6 @@ const Discord = require('discord.js')
 const express = require('express')
 const parser = require('body-parser')
 const axios = require('axios')
-const _ = require('lodash')
 const config = require('./config.json')
 
 const app = express()
@@ -19,7 +18,7 @@ const defaultColor = Discord.Util.resolveColor([241, 51, 51])
 
 // Define API key middleware
 app.use((req, res, next) => {
-  if (config?.token !== null && req?.headers?.auth_token === config.token) {
+  if (config?.token !== null && req?.headers['X-Auth-Token'] === config.token) {
     next()
   }
   res.status(401).json('Missing auth_token header').end()
@@ -51,6 +50,7 @@ app.post("/announce", (req, res) => {
         }
       })
     })
+    console.log('Sent announcement to Discord!')
   }
 
   res.status(200).json({ status: 'OK' }).end()
