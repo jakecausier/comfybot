@@ -1,4 +1,4 @@
-const Discord = require('discord.js')
+const { Client, Intents, MessageEmbed } = require('discord.js')
 const express = require('express')
 const parser = require('body-parser')
 const axios = require('axios')
@@ -7,8 +7,16 @@ const config = require('./config.json')
 const app = express()
 app.use(parser.json())
 
-const client = new Discord.Client({
-  disableEveryone: false,
+const client = new Client({
+  allowedMentions: {
+    parse: [
+      'everyone'
+    ],
+    replied_user: true
+  },
+  intents: [
+    Intents.FLAGS.GUILD_MESSAGES
+  ]
 })
 const defaultProvider = {
   name: 'ComfyTheatre',
@@ -38,20 +46,23 @@ app.post("/announce", (req, res) => {
   const img = req.body.image || null
 
   if (channel && message) {
-    channel.send(`${message}${shouldAnnounce ? ` @${targetAnnounce}` : ''}`, {
-      embed: new Discord.MessageEmbed({
-        url,
-        title,
-        description: message,
-        image: img ? {
-          url: img
-        } : null,
-        provider: defaultProvider,
-        color: defaultColor,
-        footer: {
-          text: title
-        }
-      })
+    channel.send({
+      content: `${message}${shouldAnnounce ? ` @${targetAnnounce}` : ''}`,
+      embeds: [
+        new MessageEmbed({
+          url,
+          title,
+          description: message,
+          image: img ? {
+            url: img
+          } : null,
+          provider: defaultProvider,
+          color: defaultColor,
+          footer: {
+            text: title
+          }
+        })
+      ]
     })
     console.log('Sent announcement to Discord!')
   }
@@ -74,6 +85,9 @@ client.on('message', (message) => {
     const args = message.content.slice(1).split(' ')
     const action = args[0]
     const author = message.member
+    const reply = {
+      messageReference: message.id
+    }
 
     // Help reply
     if (action === 'help') {
@@ -82,7 +96,10 @@ client.on('message', (message) => {
         // `**${prefix}votes** - Show the current film votes`,
         `**${prefix}roll #number** - Roll a random number between 1 and #number`
       ]
-      return message.channel.send(`Hi ${author}, I'm Comfy-tan! Here are the commands you can use when mentioning me:${commands.map(val => `\n${val}`).join()}`)
+      return message.channel.send({
+        content: `Hi ${author}, I'm Comfy-tan! Here are the commands you can use when mentioning me:${commands.map(val => `\n${val}`).join()}`,
+        reply
+      })
     }
 
     // Film votes reply
@@ -91,7 +108,7 @@ client.on('message', (message) => {
     //     .then(({ data }) => {
     //       if (data.success) {
     //         message.channel.send(`Here are the current film votes for you, ${author}...`, {
-    //           embed: new Discord.MessageEmbed({
+    //           embed: new MessageEmbed({
     //             title: 'Film Votes',
     //             description: `Currently winning: **${data.data[0].title}** with ${data.data[0].votes} votes`,
     //             thumbnail: {
@@ -123,16 +140,25 @@ client.on('message', (message) => {
       const max = 10000
 
       if (!value || Number.isNaN(value)) {
-        return message.channel.send(`Please enter a valid number as the first parameter (ie. **${prefix}roll 6**)`)
+        return message.channel.send({
+          content: `Please enter a valid number as the first parameter (ie. **${prefix}roll 6**)`,
+          reply
+        })
       }
 
       value = Math.max(Number.parseInt(value))
       if (value < min || value > max) {
-        return message.channel.send(`I can't roll ${value}! Must be between ${min} and ${max}.`)
+        return message.channel.send({
+          content: `I can't roll ${value}! Must be between ${min} and ${max}.`,
+          reply
+        })
       }
 
       const result = Math.floor(Math.random() * value)
-      return message.channel.send(`${author} rolled **${result}**`)
+      return message.channel.send({
+        content: `${author} rolled **${result}**`,
+        reply
+      })
     }
   }
 })
