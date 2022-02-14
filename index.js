@@ -64,7 +64,7 @@ app.post("/announce", (req, res) => {
       }
 
       channel.send({
-        content: `${message}${shouldAnnounce ? ` @${targetAnnounce}` : ''}`,
+        content: `${title} ${shouldAnnounce ? `@${targetAnnounce}` : ''}`,
         embeds: [
           new MessageEmbed({
             url,
