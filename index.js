@@ -52,19 +52,14 @@ app.post("/announce", (req, res) => {
 
   client.channels.fetch(channel)
     .then((channel) => {
-      const title = req.body.title || null
+      const title = req.body.title || ''
       const message = req.body.message || null
-      const shouldAnnounce = req.body.announce || false
-      const targetAnnounce = req.body.target || 'here'
+      const target = req.body.target || 'here'
       const url = req.body.url || null
       const img = req.body.image || null
 
-      if (!message) {
-        res.status(400).json({ message: 'Missing message content' }).end()
-      }
-
       channel.send({
-        content: `${title} ${shouldAnnounce ? `@${targetAnnounce}` : ''}`,
+        content: `${title} @${target}`,
         embeds: [
           new MessageEmbed({
             url,
