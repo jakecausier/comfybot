@@ -54,12 +54,12 @@ app.post("/announce", (req, res) => {
     .then((channel) => {
       const title = req.body.title || ''
       const message = req.body.message || null
-      const target = req.body.target || 'here'
+      const target = req.body.target || null
       const url = req.body.url || null
       const img = req.body.image || null
 
       channel.send({
-        content: `${title} @${target}`,
+        content: `${title}${target ? ` @${target}` : ''}`,
         embeds: [
           new MessageEmbed({
             url,
