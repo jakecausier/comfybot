@@ -14,9 +14,7 @@ const client = new Client({
     ],
     replied_user: true
   },
-  intents: [
-    Intents.FLAGS.GUILD_MESSAGES
-  ]
+  intents: new Intents(283468090368)
 })
 const defaultProvider = {
   name: 'ComfyTheatre',
@@ -42,7 +40,6 @@ app.use((req, res, next) => {
 
 // Listen to endpoint to announce on Discord
 app.post("/announce", (req, res) => {
-
   const channel = config.discord.announcement_channel_id
 
   if (!channel) {
@@ -59,7 +56,7 @@ app.post("/announce", (req, res) => {
       const img = req.body.image || null
 
       channel.send({
-        content: `${title}${target ? ` @${target}` : ''}`,
+        content: `${title} ${target ? `@${target}` : ''}`,
         embeds: [
           new MessageEmbed({
             url,
