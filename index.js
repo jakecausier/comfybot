@@ -7,6 +7,9 @@ const config = require('./config.json')
 const app = express()
 app.use(parser.json())
 
+const intents = new Intents(283468090368)
+intents.add(Intents.FLAGS.GUILDS)
+
 const client = new Client({
   allowedMentions: {
     parse: [
@@ -14,7 +17,7 @@ const client = new Client({
     ],
     replied_user: true
   },
-  intents: new Intents(283468090368)
+  intents
 })
 const defaultProvider = {
   name: 'ComfyTheatre',
