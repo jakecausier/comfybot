@@ -54,6 +54,7 @@ app.post("/announce", (req, res) => {
     .then((channel) => {
       const title = req.body.title || ''
       const message = req.body.message || null
+      const fields = req.body.fields || null
       const target = req.body.target || null
       const url = req.body.url || null
       const img = req.body.image || null
@@ -64,6 +65,7 @@ app.post("/announce", (req, res) => {
           new MessageEmbed({
             url,
             title,
+            fields,
             description: message,
             image: img ? {
               url: img
