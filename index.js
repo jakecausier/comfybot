@@ -65,7 +65,7 @@ app.post("/announce", (req, res) => {
       channel.send({
         content: `${title} ${target ? `@${target}` : ''}`,
         embeds: [
-          new MessageEmbed(merge(
+          new MessageEmbed(lodash.merge(
             {
               url,
               title,
