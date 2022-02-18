@@ -1,3 +1,4 @@
+import { merge } from 'lodash'
 const { Client, Util, Intents, MessageEmbed } = require('discord.js')
 const express = require('express')
 const parser = require('body-parser')
@@ -62,20 +63,26 @@ app.post("/announce", (req, res) => {
       channel.send({
         content: `${title} ${target ? `@${target}` : ''}`,
         embeds: [
-          new MessageEmbed({
-            url,
-            title,
-            fields,
-            description: message,
-            image: img ? {
-              url: img
-            } : null,
-            provider: defaultProvider,
-            color: defaultColor,
-            footer: {
-              text: url
-            }
-          })
+          new MessageEmbed(merge(
+            {
+              url,
+              title,
+              description: message,
+              provider: defaultProvider,
+              color: defaultColor,
+              footer: {
+                text: url
+              }
+            },
+            (fields ? {
+              fields
+            } : {}),
+            (img ? {
+              image: {
+                url: img
+              }
+            } : {})
+          )
         ]
       })
       console.log('Sent announcement to Discord!')
