@@ -59,9 +59,7 @@ app.post("/announce", (req, res) => {
       const target = req.body.target || null
       const url = req.body.url || null
       const img = req.body.image || null
-
-      console.info('Announcement posted', fields)
-
+      
       channel.send({
         content: `${title} ${target ? `@${target}` : ''}`,
         embeds: [
