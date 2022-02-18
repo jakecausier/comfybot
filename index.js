@@ -1,8 +1,8 @@
-import { merge } from 'lodash'
 const { Client, Util, Intents, MessageEmbed } = require('discord.js')
 const express = require('express')
 const parser = require('body-parser')
 const axios = require('axios')
+const lodash = require('lodash')
 const config = require('./config.json')
 
 const app = express()
@@ -60,6 +60,8 @@ app.post("/announce", (req, res) => {
       const url = req.body.url || null
       const img = req.body.image || null
 
+      console.info('Announcement posted', fields)
+
       channel.send({
         content: `${title} ${target ? `@${target}` : ''}`,
         embeds: [
@@ -82,7 +84,7 @@ app.post("/announce", (req, res) => {
                 url: img
               }
             } : {})
-          )
+          ))
         ]
       })
       console.log('Sent announcement to Discord!')
